@@ -1,4 +1,5 @@
-import { useState, useMemo, useEffect } from 'react'
+import { useState, useMemo, useEffect, memo } from 'react'
+import Cards from './components/Cards';
 
 async function fetchJson(url) {
   const response = await fetch(url)
@@ -21,35 +22,28 @@ function App() {
   }, [])
 
 
-  const filteredPoliticans = useMemo(()=>{
-    return politicans.filter((politican)=>{
+  const filteredPoliticans = useMemo(() => {
+    return politicans.filter((politican) => {
       const isInName = politican.name.toLowerCase().includes(search.toLocaleLowerCase())
       const isInBio = politican.biography.toLowerCase().includes(search.toLocaleLowerCase())
       return isInName || isInBio
     })
-  },[search, politicans])
+  }, [search, politicans])
+
+  const ReactMemoCard = memo(Cards)
 
   return (
     <>
       <h1 className='text-center'>Lista dei politici</h1>
       <div className="container d-flex justify-content-end p-2">
-          <div className="col-auto">
-            <input type="text" className="form-control" placeholder="Cerca" value={search} onChange={(e)=>setSearch(e.target.value)} />
-          </div>
+        <div className="col-auto">
+          <input type="text" className="form-control" placeholder="Cerca" value={search} onChange={(e) => setSearch(e.target.value)} />
+        </div>
       </div>
       <div className="container text-center">
         <div className="row">
-          {filteredPoliticans && filteredPoliticans.map(politican => (
-            <div className="col-4 gy-3" key={politican.id}>
-              <div className="card h-100 " >
-                <img src={politican.image} className="card-img-top" alt={politican.name} />
-                <div className="card-body">
-                  <p className="card-text"><strong>Name:</strong> {politican.name}</p>
-                  <p className="card-text"><strong>Political Office</strong>: {politican.position}</p>
-                  <p className="card-text"><strong>Biografy:</strong> {politican.biography}</p>
-                </div>
-              </div>
-            </div>
+           {filteredPoliticans && filteredPoliticans.map(politican => (
+            <ReactMemoCard key={politican.id} {...politican} />
           ))}
         </div>
       </div>
@@ -58,3 +52,5 @@ function App() {
 }
 
 export default App
+
+{/* <ReactMemoCard politicans={filteredPoliticans} /> */}
